@@ -4,3 +4,4 @@ config.json
 STB-Proxy.log
 changenotes.txt
 .vscode
+.venv

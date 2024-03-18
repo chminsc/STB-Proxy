@@ -807,17 +807,23 @@ def channel(portalId, channelId):
             ffprobecmd.insert(1, "-http_proxy")
             ffprobecmd.insert(2, proxy)
 
-        with subprocess.Popen(
-            ffprobecmd,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        ) as ffprobe_sb:
-            ffprobe_sb.communicate()
-            if ffprobe_sb.returncode == 0:
-                return True
-            else:
-                return False
+        try:
+            with subprocess.Popen(
+                ffprobecmd,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            ) as ffprobe_sp:
+                _, stderr = ffprobe_sp.communicate()  # Communicate returns a tuple (stdout, stderr)
+                if ffprobe_sp.returncode == 0:
+                    return True
+                else:
+                    logger.error("ffprobe error: %s", stderr.decode())  # Log the error output
+                    return False
+        except Exception as e:
+            logger.error("Error running ffprobe: %s", str(e))
+            return False
+      
 
     def isMacFree():
         count = 0
